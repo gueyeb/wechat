@@ -418,3 +418,40 @@ class WxApi(WxBaseApi):
                           'openid': openid,
                           'pagesize': pagesize,
                           'pageindex': pageindex})
+
+    def preview_send_message(self, to_user, msg_type, content):
+        func = {
+                'text': self.preview_send_text,
+                'image': self.preview_send_image,
+                'voice': self.preview_send_voice,
+                'video': self.preview_send_video,
+                'news': self.preview_send_news
+                }.get(msg_type, None)
+        if func:
+            return func(to_user, content)
+        return None, None
+
+    def preview_send_text(self, to_user, content):
+        return self._post('message/mass/preview',
+                          {'touser': to_user, 'msgtype': 'text',
+                           'text': {'content': content}})
+
+    def preview_send_image(self, to_user, media_id):
+        return self._post('message/mass/preview',
+                          {'touser': to_user, 'msgtype': 'image',
+                           'image': {'media_id': media_id}})
+
+    def preview_send_voice(self, to_user, media_id):
+        return self._post('message/mass/preview',
+                          {'touser': to_user, 'msgtype': 'voice',
+                           'voice': {'media_id': media_id}})
+
+    def preview_send_video(self, to_user, media_id):
+        return self._post('message/mass/preview',
+                          {'touser': to_user, 'msgtype': 'mpvideo',
+                           'mpvideo': {'media_id': content}})
+
+    def preview_send_news(self, to_user, media_id):
+        return self._post('message/mass/preview',
+                         {'touser': to_user, 'msgtype': 'mpnews',
+                          'mpnews': {'media_id': media_id}})
